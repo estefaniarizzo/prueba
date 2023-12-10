@@ -27,12 +27,13 @@ router.get('/admins/:id', administradorController.getAdministradorById);
 router.put('/admins/:id', administradorController.updateAdministrador);
 router.delete('/admins/:id', administradorController.deleteAdministrador);
 //Rutas para Calificacion
-router.get('/nota', calificacionController.getCalificacion);
-router.get('/nota/alumno/:id', calificacionController.getCalificacionesPorAlumno);
-router.post('/nota', calificacionController.createCalificacion);
-router.get('/nota/:id', calificacionController.getCalificacionById);
-router.put('/nota/:id', calificacionController.updateCalificacion);
-router.delete('/nota/:id', calificacionController.deleteCalificacion);
+router.get('/nota', calificacionController.getNotas);
+router.get('/nota/alumno/:id', calificacionController.getNotasPorAlumno);
+router.post('/nota', calificacionController.createNota);
+router.get('/nota/:id', calificacionController.getNotaById);
+router.put('/nota/:id', calificacionController.updateNota);
+router.delete('/nota/:id', calificacionController.deleteNota);
+router.get('/nota/fecha', calificacionController.getNotasPorGrupoPorFecha);
 //Rutas para Grupo
 router.get('/grupo', grupoController. getGrupo);
 router.post('/grupo', grupoController.createGrupo);
@@ -45,6 +46,7 @@ router.post('/modulo', modulosController.createModulo);
 router.get('/modulo/:id', modulosController.getModuloById);
 router.put('/modulo/:id', modulosController.updateModulo);
 router.delete('/modulo/:id', modulosController.deleteModulo);
+router.get('/modulopromedio', modulosController. getMejoresPeoresModulos);
 //Rutas para Permisos
 router.get('/permisos', permisosController. getPermiso);
 router.post('/permisos', permisosController.createPermiso);
@@ -52,9 +54,10 @@ router.get('/permisos/:id', permisosController.getPermisoById);
 router.put('/permisos/:id', permisosController.updatePermiso);
 router.delete('/permisos/:id', permisosController.deletePermiso);
 //Rutas para Quiz
-router.get('/quiz', quizController. getQuiz);
-router.post('/quiz', quizController.createQuiz);
-router.get('/quiz/:id', quizController.getQuizById);
-router.put('/quiz/:id', quizController.updateQuiz);
-router.delete('/quiz/:id', quizController.deleteQuiz);
+router.get('/quiz', quizController.getExamenes);
+router.post('/quiz', quizController.createExamen);
+router.get('/quiz/:id', quizController.getExamenById);
+router.put('/quiz/:id', quizController.updateExamen);
+router.delete('/quiz/:id', quizController.deleteExamen);
+router.get('/quizpendiente', quizController.getExamenesNoRespondidosPorAlumno);
 module.exports = router;

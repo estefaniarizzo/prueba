@@ -1,68 +1,95 @@
-const { Quiz } = require('../models');
+const { Examen, Nota } = require('../models');
 
-const getQuiz = async (req, res) => {
+const getExamenes = async (req, res) => {
   try {
-    const quizz = await Quiz.findAll();
-    res.json(quizz);
+    const examenes = await Examen.findAll();
+    res.json(examenes);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-const createQuiz = async (req, res) => {
+const createExamen = async (req, res) => {
   try {
-    const quiz = await Quiz.create(req.body);
-    res.json(quiz);
+    const examen = await Examen.create(req.body);
+    res.json(examen);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-const getQuizById = async (req, res) => {
+const getExamenById = async (req, res) => {
   try {
-    const quiz = await Quiz.findByPk(req.params.id);
-    if (!quiz) {
-      res.status(404).json({ error: 'Quiz no encontrado' });
+    const examen = await Examen.findByPk(req.params.id);
+    if (!examen) {
+      res.status(404).json({ error: 'Examen no encontrado' });
     } else {
-      res.json(quiz);
+      res.json(examen);
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-const updateQuiz = async (req, res) => {
+const updateExamen = async (req, res) => {
   try {
-    const quiz = await Quiz.findByPk(req.params.id);
-    if (!quiz) {
-      res.status(404).json({ error: 'Quiz no encontrado' });
+    const examen = await Examen.findByPk(req.params.id);
+    if (!examen) {
+      res.status(404).json({ error: 'Examen no encontrado' });
     } else {
-      await quiz.update(req.body);
-      res.json(grupo);
+      await examen.update(req.body);
+      res.json(examen);
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-const deleteQuiz = async (req, res) => {
+const deleteExamen = async (req, res) => {
   try {
-    const quiz = await Quiz.findByPk(req.params.id);
-    if (!quiz) {
-      res.status(404).json({ error: 'Quiz no encontrado' });
+    const examen = await Examen.findByPk(req.params.id);
+    if (!examen) {
+      res.status(404).json({ error: 'Examen no encontrado' });
     } else {
-      await quiz.destroy();
-      res.json({ message: 'Quiz eliminado exitosamente' });
+      await examen.destroy();
+      res.json({ message: 'Examen eliminado exitosamente' });
     }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getExamenesNoRespondidosPorAlumno = async (req, res) => {
+  try {
+    const alumnoId = req.params.id;
+
+    // Obtener todos los exámenes
+    const todosExamenes = await Examen.findAll();
+
+    // Obtener los exámenes respondidos por el alumno
+    const examenesRespondidos = await Nota.findAll({
+      where: {
+        alumno: alumnoId,
+      },
+      attributes: ['examenId'], // Obtener solo los IDs de los exámenes respondidos
+    });
+
+    // Filtrar los exámenes no respondidos
+    const examenesNoRespondidos = todosExamenes.filter(
+      (examen) => !examenesRespondidos.some((nota) => nota.examenId === examen.id)
+    );
+
+    res.json(examenesNoRespondidos);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
 module.exports = {
-    getQuiz,
-    createQuiz,
-    getQuizById,
-    updateQuiz,
-    deleteQuiz,
+  getExamenes,
+  createExamen,
+  getExamenById,
+  updateExamen,
+  deleteExamen,
+  getExamenesNoRespondidosPorAlumno,
 };

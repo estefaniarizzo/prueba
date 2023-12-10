@@ -1,9 +1,37 @@
-const { Modulo } = require('../models');
+const { Nota, Modulos } = require('../models');
+const { Sequelize } = require('sequelize');
 
 const getModulo = async (req, res) => {
   try {
-    const modulos = await Modulo.findAll();
+    const modulos = await Modulos.findAll();
     res.json(modulos);
+  } catch (error) {
+    console.error('Error al obtener los módulos:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+const getMejoresPeoresModulos = async (req, res) => {
+  try {
+    // Obtener las calificaciones agrupadas por módulo y calcular el promedio
+    const calificaciones = await Nota.findAll({
+      include: [{
+        model: Modulo,
+        attributes: ['nombre'],
+      }],
+      attributes: [
+        [Sequelize.fn('AVG', Sequelize.col('puntaje')), 'promedio'],
+      ],
+      group: ['Nota.moduloId'],
+    });
+
+    // Ordenar por promedio (de mejor a peor)
+    const mejoresModulos = calificaciones.sort((a, b) => b.dataValues.promedio - a.dataValues.promedio);
+
+    // Obtener solo los nombres de los módulos
+    const nombresMejoresModulos = mejoresModulos.map((calificacion) => calificacion.Modulo.nombre);
+
+    res.json({ mejoresModulos: nombresMejoresModulos });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -11,8 +39,8 @@ const getModulo = async (req, res) => {
 
 const createModulo = async (req, res) => {
   try {
-    const modulo = await Modulo.create(req.body);
-    res.json(modulo);
+    const modulos = await Modulos.create(req.body);
+    res.json(modulos);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -20,11 +48,11 @@ const createModulo = async (req, res) => {
 
 const getModuloById = async (req, res) => {
   try {
-    const modulo = await Modulo.findByPk(req.params.id);
-    if (!modulo) {
+    const modulos = await Modulos.findByPk(req.params.id);
+    if (!modulos) {
       res.status(404).json({ error: 'Modulo no encontrado' });
     } else {
-      res.json(modulo);
+      res.json(modulos);
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -33,12 +61,12 @@ const getModuloById = async (req, res) => {
 
 const updateModulo = async (req, res) => {
   try {
-    const modulo = await Modulo.findByPk(req.params.id);
-    if (!modulo) {
+    const modulos = await Modulos.findByPk(req.params.id);
+    if (!modulos) {
       res.status(404).json({ error: 'Modulo no encontrado' });
     } else {
-      await modulo.update(req.body);
-      res.json(modulo);
+      await modulos.update(req.body);
+      res.json(modulos);
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -47,11 +75,11 @@ const updateModulo = async (req, res) => {
 
 const deleteModulo = async (req, res) => {
   try {
-    const modulo = await Modulo.findByPk(req.params.id);
-    if (!modulo) {
+    const modulos = await Modulos.findByPk(req.params.id);
+    if (!modulos) {
       res.status(404).json({ error: 'Modulo no encontrado' });
     } else {
-      await modulo.destroy();
+      await modulos.destroy();
       res.json({ message: 'Modulo eliminado exitosamente' });
     }
   } catch (error) {
@@ -60,9 +88,10 @@ const deleteModulo = async (req, res) => {
 };
 
 module.exports = {
-    getModulo,
-    createModulo,
-    getModuloById,
-    updateModulo,
-    deleteModulo,
+  getModulo,
+  getMejoresPeoresModulos,
+  createModulo,
+  getModuloById,
+  updateModulo,
+  deleteModulo,
 };

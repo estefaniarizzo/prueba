@@ -11,6 +11,7 @@ const getAlumnos = async (req, res) => {
 
 const createAlumno = async (req, res) => {
   try {
+    console.log(req.body);
     const alumno = await Alumno.create(req.body);
     res.json(alumno);
   } catch (error) {
